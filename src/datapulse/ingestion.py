@@ -57,7 +57,7 @@ def fetch_data(limit=100, offset=0, dataset_id="rainfall_surat"):
             response = requests.get(
                 api_url,
                 params=params,
-                headers={"User-Agent": "DataPulse-India/1.0"},
+                headers={"User-Agent": "curl/8.0.0", "Accept": "*/*",},
                 timeout=(10, 30),
             )
             status_code = response.status_code
