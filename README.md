@@ -109,4 +109,163 @@ DataPulse-India/
 │   ├── reports/
 │   ├── metrics/
 │   └── history/
-├── check
+├── check_mandi.py
+├── requirements.txt
+├── .gitignore
+└── README.md
+```
+
+Generated monitoring data, local secrets, virtual environments, and build artifacts should remain outside version control.
+
+## Getting started
+
+### Prerequisites
+
+- Python 3.12
+- Node.js and npm
+- A data.gov.in API key
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/sidra-tahseen/DataPulse-India.git
+cd DataPulse-India
+```
+
+### 2. Set up the Python environment
+
+**Windows PowerShell:**
+
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+If PowerShell prevents script execution, activate the environment using a permitted shell or adjust your execution policy according to your system's security requirements.
+
+### 3. Configure the API key
+
+Create a `.env` file in the project root:
+
+```dotenv
+DATAGOV_API_KEY=your_data_gov_in_api_key
+```
+
+Replace the placeholder with your own API key. Never commit `.env` or expose the key in frontend code, logs, screenshots, or public error messages.
+
+### 4. Run the backend
+
+From the project root:
+
+```powershell
+python -m uvicorn src.datapulse.api:app --reload --port 8000
+```
+
+The API runs locally at:
+
+- **API root:** http://localhost:8000/
+- **Interactive API documentation:** http://localhost:8000/docs
+
+### 5. Run the frontend
+
+Open another terminal:
+
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+Open http://localhost:5173/ in your browser.
+
+### 6. Run the tests
+
+From the project root, with the Python environment activated:
+
+```powershell
+python -m pytest
+```
+
+Build the frontend for production:
+
+```powershell
+cd frontend
+npm run build
+```
+
+## API endpoints
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /api/datasets` | List registered datasets |
+| `GET /api/health/latest` | Retrieve the latest monitoring report |
+| `GET /api/health/history` | Retrieve historical monitoring reports |
+| `GET /api/health/compare` | Compare the latest reports and snapshots |
+| `GET /api/health/trends` | Retrieve historical quality trends |
+| `GET /api/reliability` | Retrieve API reliability metrics |
+| `POST /api/monitor/run` | Trigger a monitoring run |
+| `GET /api/monitor/status` | Inspect monitoring and scheduler status |
+| `GET /api/prices/history` | Retrieve saved mandi price observations |
+| `GET /api/prices/changes` | Retrieve recorded mandi price movements |
+
+Dataset-specific endpoints accept a `dataset_id` parameter where applicable. Refer to `/docs` for request parameters and response schemas.
+
+## Testing and validation
+
+The project uses pytest for automated tests covering:
+
+- Dataset comparison
+- Freshness classification
+- Ingestion retries and reliability recording
+- Data completeness and schema validation
+- Statistical anomaly detection
+- Dataset health scoring
+- Snapshot creation and deduplication
+- Reliability metrics and summaries
+
+Run the complete suite using:
+
+```powershell
+python -m pytest
+```
+
+Report test results based on the latest actual run rather than assuming a fixed test count.
+
+The frontend can be validated using:
+
+```powershell
+cd frontend
+npm run build
+```
+
+## Current limitations
+
+- Only two datasets are currently registered.
+- Schema checks validate required fields; comprehensive schema evolution and type-drift detection remain future work.
+- Statistical anomaly detection flags potential outliers. Domain knowledge is needed to determine whether a flagged value represents a genuine data problem.
+- The health score summarizes selected quality and monitoring metrics. It should not be interpreted as a guarantee that a dataset is accurate or suitable for every use case.
+- Monitoring snapshots, reports, price history, and metrics are stored locally. A more robust persistence strategy is needed for production deployment.
+- Monitoring frequency and freshness thresholds should be configured appropriately for each dataset.
+- Historical trends and price movements become more informative as additional monitoring runs and observations accumulate.
+- Production deployment requires appropriate configuration for CORS, environment variables, API access, and persistent storage.
+
+## Roadmap
+
+1. Expand and validate the registry with additional curated government datasets.
+2. Configure dataset-specific freshness thresholds and monitoring intervals.
+3. Improve schema-drift and data-type validation.
+4. Strengthen API-key redaction and regression tests for failure paths.
+5. Add continuous integration with GitHub Actions.
+6. Deploy the application with configurable CORS, environment-based API URLs, and persistent storage.
+7. Collect real monitoring results over time to evaluate data quality and reliability trends.
+8. Improve dashboard performance and usability as the number of datasets and historical records grows.
+
+## Contributing
+
+Contributions are welcome. Before submitting changes, run the Python tests and build the frontend. Keep credentials and generated runtime data out of commits, and ensure that documentation reflects implemented functionality.
+
+## License
+
+See the repository's `LICENSE` file.
