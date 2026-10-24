@@ -108,6 +108,14 @@ def fetch_data(limit=100, offset=0, dataset_id="rainfall_surat"):
                 else "Could not connect to the government API."
             )
             error_type = type(error).__name__
+            safe_error = str(error).replace(API_KEY, "[REDACTED]")
+            logger.warning(
+                "Government API connection detail for dataset=%s: %s",
+                dataset_id,
+                safe_error,
+            )
+            
+            
 
         except requests.exceptions.HTTPError as error:
             status = (
