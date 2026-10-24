@@ -89,17 +89,31 @@ def execute_monitor(dataset_id="rainfall_surat"):
 
         if result.returncode != 0:
             import logging
-
-            logging.getLogger(__name__).error(
+            logger = logging.getLogger(__name__)
+            logger.error(
                 "Monitoring subprocess failed for dataset=%s, exit_code=%s",
                 dataset_id,
                 result.returncode,
             )
+            if result.stderr:
+                logger.error(
+                    "Monitor stderr for dataset=%s:\n%s",
+                    dataset_id,
+                    result.stderr[-4000:],
+                )
+
+            if result.stdout:
+                logger.error(
+                    "Monitor stdout for dataset=%s:\n%s",
+                    dataset_id,
+                    result.stdout[-2000:],
+                )
+
             error = "Monitoring run failed. Check the backend logs for details."
             monitor_status["last_result"] = "FAILED"
             monitor_status["last_error"] = error
             return False, error
-
+        
         monitor_status["last_result"] = "SUCCESS"
         monitor_status["last_error"] = None
         return True, result.stdout
